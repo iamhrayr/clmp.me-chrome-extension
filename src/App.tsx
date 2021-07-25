@@ -6,8 +6,13 @@ import {
   Button,
   Input,
   Flex,
-  useToast,
+  Box,
+  Icon,
+  Stack,
+  Tooltip,
+  IconButton,
 } from "@chakra-ui/react";
+import { IoQrCodeOutline, IoCopyOutline } from "react-icons/io5";
 
 import theme from "./theme";
 import { shortifyUrl } from "./api";
@@ -15,6 +20,7 @@ import { shortifyUrl } from "./api";
 function App() {
   const [done, setDone] = React.useState(false);
   const [url, setUrl] = React.useState("");
+  const [code, setCode] = React.useState("");
   const [, copyToClipboard] = useCopyToClipboard();
 
   const onSuccess = React.useCallback(
@@ -22,6 +28,7 @@ function App() {
       copyToClipboard(data.shortUrl);
       setDone(true);
       setUrl(data.shortUrl);
+      setCode(data.code);
     },
     [copyToClipboard]
   );
@@ -30,7 +37,7 @@ function App() {
     onSuccess,
   });
 
-  const shortifyAndCopyUrl = React.useCallback(() => {
+  const onClickShortify = React.useCallback(() => {
     chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
       setDone(false);
       const url = tabs[0].url;
@@ -52,20 +59,41 @@ function App() {
           size="sm"
           variant="outline"
           isLoading={isLoading}
-          onClick={shortifyAndCopyUrl}
+          onClick={onClickShortify}
         >
           Shortify & Copy
         </Button>
-        {!done && (
-          <Input
-            readOnly
-            value={"http://clmp.me/u/EheYG"}
-            mb="2"
-            size="sm"
-            textAlign="center"
-          />
+
+        {done && (
+          <>
+            <Box mb="4" textAlign="center">
+              <Input readOnly value={url} mb="2" size="sm" textAlign="center" />
+              <span>Automatically Copied ;)</span>
+            </Box>
+
+            <Stack direction="row" spacing={4} align="center">
+              <Tooltip label="Copy" placement="bottom">
+                <IconButton
+                  size="sm"
+                  aria-label="Copy"
+                  icon={<Icon as={IoCopyOutline} />}
+                  onClick={() => copyToClipboard(url)}
+                />
+              </Tooltip>
+
+              <Tooltip label="Open QR code" placement="bottom">
+                <IconButton
+                  size="sm"
+                  as="a"
+                  target="_blank"
+                  href={`http://clmp.me/qr/${code}`}
+                  aria-label="QR"
+                  icon={<Icon as={IoQrCodeOutline} />}
+                />
+              </Tooltip>
+            </Stack>
+          </>
         )}
-        {!done && <span>Automatically Copied ;)</span>}
       </Flex>
     </ChakraProvider>
   );
