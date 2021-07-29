@@ -3,7 +3,7 @@ import axios from "axios";
 const BASE_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:3000/"
-    : "http://clmp.me/";
+    : "https://clmp.me/";
 
 const http = axios.create({
   baseURL: BASE_URL,
