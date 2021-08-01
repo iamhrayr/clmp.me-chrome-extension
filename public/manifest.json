@@ -1,7 +1,7 @@
 {
   "name": "clmp.me",
   "description": "Minimal URL shortener",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "manifest_version": 2,
   "browser_action": {
     "default_popup": "index.html",

@@ -22,9 +22,16 @@ http.interceptors.response.use(
   }
 );
 
-export const shortifyUrl = async (url: string): Promise<string> => {
+export const shortifyUrl = async ({
+  url,
+  passcode,
+}: {
+  url: string;
+  passcode?: string;
+}): Promise<string> => {
   const { data } = await http.post("./urls", {
     url,
+    passcode,
   });
   return data;
 };

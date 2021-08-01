@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { useMutation } from "react-query";
 import { useCopyToClipboard } from "react-use";
 import {
@@ -10,7 +10,12 @@ import {
   Icon,
   Stack,
   Tooltip,
+  FormControl,
+  FormLabel,
+  Switch,
+  VStack,
   IconButton,
+  Text,
 } from "@chakra-ui/react";
 import { IoQrCodeOutline, IoCopyOutline } from "react-icons/io5";
 
@@ -20,6 +25,8 @@ import { shortifyUrl } from "./api";
 function App() {
   const [done, setDone] = React.useState(false);
   const [url, setUrl] = React.useState("");
+  const [isProtectEnabled, setIsProtectEnabled] = React.useState(false);
+  const [passcode, setPasscode] = React.useState("");
   const [code, setCode] = React.useState("");
   const [, copyToClipboard] = useCopyToClipboard();
 
@@ -33,39 +40,68 @@ function App() {
     [copyToClipboard]
   );
 
-  const { mutate, isLoading } = useMutation(shortifyUrl, {
+  const { mutate, isLoading, error } = useMutation(shortifyUrl, {
     onSuccess,
   });
 
-  const onClickShortify = React.useCallback(() => {
+  const onShortifyClick = React.useCallback(() => {
     chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
       setDone(false);
       const url = tabs[0].url;
-      url && mutate(url);
+      url && mutate({ url, passcode });
     });
-  }, [mutate]);
+  }, [mutate, passcode]);
+
+  const onIsProtectedToggle = React.useCallback((e) => {
+    setIsProtectEnabled(e.target.checked);
+  }, []);
+
+  const onPasscodeChange = React.useCallback((e) => {
+    setPasscode(e.target.value);
+  }, []);
 
   return (
     <ChakraProvider theme={theme}>
-      <Flex
-        w="240px"
-        p={4}
-        alignItems="center"
-        justifyContent="center"
-        direction="column"
-      >
-        <Button
-          mb="2"
-          size="sm"
-          variant="outline"
-          isLoading={isLoading}
-          onClick={onClickShortify}
-        >
-          Shortify & Copy
-        </Button>
+      <Box w="240px" p={4}>
+        {!done ? (
+          <VStack spacing="2">
+            <FormControl
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <FormLabel htmlFor="passcode" mb="0">
+                Protected url?
+              </FormLabel>
+              <Switch
+                id="passcode"
+                isChecked={isProtectEnabled}
+                onChange={onIsProtectedToggle}
+              />
+            </FormControl>
 
-        {done && (
-          <>
+            {isProtectEnabled && (
+              <Input
+                width={160}
+                size="sm"
+                placeholder="Passcode"
+                value={passcode}
+                onChange={onPasscodeChange}
+              />
+            )}
+
+            <Button
+              size="sm"
+              variant="outline"
+              isLoading={isLoading}
+              isDisabled={isProtectEnabled && passcode.length === 0}
+              onClick={onShortifyClick}
+            >
+              Shortify & Copy
+            </Button>
+          </VStack>
+        ) : (
+          <Flex alignItems="center" justifyContent="center" direction="column">
             <Box mb="4" textAlign="center">
               <Input readOnly value={url} mb="2" size="sm" textAlign="center" />
               <span>Automatically Copied ;)</span>
@@ -92,9 +128,15 @@ function App() {
                 />
               </Tooltip>
             </Stack>
-          </>
+          </Flex>
         )}
-      </Flex>
+
+        {error && (
+          <Text fontSize="sm" textAlign="center" color="red.400">
+            {(error as any).message}
+          </Text>
+        )}
+      </Box>
     </ChakraProvider>
   );
 }
