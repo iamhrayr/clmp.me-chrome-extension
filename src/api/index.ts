@@ -1,26 +1,4 @@
-import axios from "axios";
-
-const BASE_URL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:3000/"
-    : "https://clmp.me/";
-
-const http = axios.create({
-  baseURL: BASE_URL,
-});
-
-http.interceptors.response.use(
-  (config) => {
-    return config;
-  },
-  (error) => {
-    if (error.response) {
-      return Promise.reject(error.response.data);
-    } else {
-      Promise.reject(error);
-    }
-  }
-);
+import http from "./http";
 
 export const shortifyUrl = async ({
   url,
@@ -34,4 +12,26 @@ export const shortifyUrl = async ({
     passcode,
   });
   return data;
+};
+
+export const signIn = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}): Promise<{
+  token: string;
+  refreshToken: string;
+  payload: {
+    email: string;
+    iat: number;
+    exp: number;
+  };
+}> => {
+  const res = await http.post("/auth/signin", {
+    email,
+    password,
+  });
+  return res.data;
 };

@@ -1,13 +1,13 @@
 {
   "name": "clmp.me",
   "description": "Minimal URL shortener",
-  "version": "1.0.4",
-  "manifest_version": 2,
-  "browser_action": {
+  "version": "1.0.5",
+  "manifest_version": 3,
+  "action": {
     "default_popup": "index.html",
     "default_title": "Shortify URL"
   },
-  "permissions": ["tabs"],
+  "permissions": ["tabs", "storage"],
   "icons": {
     "16": "logo256.png",
     "48": "logo256.png",
