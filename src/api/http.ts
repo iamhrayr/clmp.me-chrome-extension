@@ -4,10 +4,10 @@ import { clearLocalStorageAuth } from "../modules/auth/provider";
 
 import storageService from "../services/storageService";
 
-const BASE_URL = "http://localhost:3000/";
-// process.env.NODE_ENV === "development"
-//   ? "http://localhost:3000/"
-//   : "https://clmp.me/";
+const BASE_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000/"
+    : "https://clmp.me/";
 
 const http = axios.create({
   baseURL: BASE_URL,
