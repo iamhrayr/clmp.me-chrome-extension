@@ -23,7 +23,7 @@ function App() {
         )}
         <HStack justifyContent="center" mt={2}>
           {!isAuthenticated ? (
-            <>
+            <React.Fragment key="1">
               <Link onClick={() => setShowSignIn((prevVal) => !prevVal)}>
                 Sign In
               </Link>
@@ -35,9 +35,9 @@ function App() {
               >
                 Sign Up
               </Link>
-            </>
+            </React.Fragment>
           ) : (
-            <>
+            <React.Fragment key="2">
               <Link
                 href="https://clmp.me/dashboard"
                 target="_blank"
@@ -47,7 +47,7 @@ function App() {
               </Link>
 
               <Link onClick={() => clearAuth()}>Sign Out</Link>
-            </>
+            </React.Fragment>
           )}
         </HStack>
       </Box>

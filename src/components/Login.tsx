@@ -66,7 +66,7 @@ export default function Login({ onBackClick }: { onBackClick: () => void }) {
   const [error, setError] = React.useState("");
 
   const formik = useFormik({
-    initialValues: { email: "", password: "", confirmPassword: "" },
+    initialValues: { email: "", password: "" },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
