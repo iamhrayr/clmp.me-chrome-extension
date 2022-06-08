@@ -16,8 +16,10 @@ const http = axios.create({
 http.interceptors.request.use(
   async (config) => {
     const { token } = await storageService.get();
-    config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${token}`;
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
